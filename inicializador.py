@@ -24,14 +24,18 @@ FROM python:3.9
 
 WORKDIR /app
 
-COPY poetry.lock pyproject.toml ./
+# Copia o arquivo requirements.txt para o contêiner
+COPY requirements.txt ./
 
-RUN pip install poetry && \\
-    poetry config virtualenvs.create false && \\
-    poetry install --no-dev
+# Instala as dependências
+RUN pip install --no-cache-dir -r requirements.txt
 
+# Copia o restante dos arquivos para o contêiner
 COPY . .
-CMD ['python', 'manage.py', 'runserver', '0.0.0.0:8000']
+
+# Comando para executar a aplicação
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+
         """)
 
 
@@ -74,8 +78,6 @@ services:
     depends_on:
       - web
 
-  monitoring_tool:
-    image: monitoring_tool_image
         """)
 
 
