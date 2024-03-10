@@ -1,18 +1,21 @@
 import os
 import logging
 
-
+caminho_atual = os.getcwd().replace('\\', '/')
 nome_do_projeto = input("Digite o nome do projeto: ")
-logging.basicConfig(filename=f"{nome_do_projeto}/project.log",
-                    level=logging.INFO,
-                    format='%(asctime)s:%(levelname)s:%(message)s')
+logging.basicConfig(
+    filename="project.log",
+    encoding="utf-8",
+    level=logging.INFO,
+    format="%(asctime)s:%(levelname)s:%(message)s",
+)
 
 
 def criar_estrutura_diretorios():
     try:
         diretorios = [
             f"{nome_do_projeto}/nginx",
-            f"{nome_do_projeto}/django_app",
+            f"{nome_do_projeto}/{nome_do_projeto}",
             f"{nome_do_projeto}/tests",
             f"{nome_do_projeto}/.github/workflows",
             f"{nome_do_projeto}/scripts",
@@ -87,7 +90,7 @@ services:
       - web
 
         """
-script = """
+script = f"""
 #!/bin/bash
 
 # Verifica se o Python está instalado
@@ -108,7 +111,7 @@ if ! command -v docker-compose &> /dev/null; then
     exit 1
 fi
 
-cd ..
+cd {caminho_atual}/{nome_do_projeto}
 
 # Cria um ambiente virtual (venv) se não existir
 if [ ! -d "venv" ]; then
@@ -125,8 +128,6 @@ pip install django
 # Cria um novo projeto Django na pasta 'django_app'
 django-admin startproject {nome_do_projeto} .
 
-# Retorna para o diretório do script
-cd -
 
 # Aplica as migrações do banco de dados
 python manage.py migrate
@@ -276,16 +277,92 @@ repo.index.add(".")
 repo.index.commit("Criando estrutura básica do Django e configurando Git")
 
                 """
+nginx = """
+# Configurações básicas
+server {
+    listen 80;
+    server_name localhost;
+
+    location / {
+        proxy_pass http://127.0.0.1:8000;
+    }
+}
+
+# Configuração HTTPS (opcional)
+server {
+    listen 443 ssl;
+    server_name localhost;
+
+    ssl_certificate /etc/ssl/nginx.pem;
+    ssl_certificate_key /etc/ssl/nginx.key;
+
+    location / {
+        proxy_pass http://127.0.0.1:8000;
+    }
+}
+
+# Configuração para arquivos estáticos (opcional)
+server {
+    listen 80;
+    server_name localhost;
+
+    location /static/ {
+        root /path/to/static/files;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:8000;
+    }
+}
+
+# Configuração Gunicorn com vários workers (opcional)
+upstream gunicorn {
+    server 127.0.0.1:8001;
+    server 127.0.0.1:8002;
+}
+
+server {
+    listen 8000;
+    server_name localhost;
+
+    location / {
+        proxy_pass http://gunicorn;
+    }
+}
+
+# Configuração com balanceamento de carga (opcional)
+upstream gunicorn {
+    server 127.0.0.1:8001;
+    server 127.0.0.1:8002;
+}
+
+server {
+    listen 80;
+    server_name localhost;
+
+    location / {
+        proxy_pass http://gunicorn;
+    }
+}
+
+"""
 
 
 def criar_envs():
 
-    ambientes = ['.dev', '.test', '.prod',
-                 '_exemplo.dev', '_exemplo.test', '_exemplo.prod']
+    ambientes = [
+        ".dev",
+        ".test",
+        ".prod",
+        "_exemplo.dev",
+        "_exemplo.test",
+        "_exemplo.prod",
+    ]
     for ambiente in ambientes:
         with open(f"{nome_do_projeto}/.env{ambiente}",
                   "w", encoding="utf-8") as f:
-            f.write("""
+            f.write(
+                """
 POSTGRES_DB=nome_do_banco_de_dados
 POSTGRES_USER=nome_do_usuario
 POSTGRES_PASSWORD=sua_senha_secreta
@@ -293,7 +370,8 @@ POSTGRES_HOST=db
 
 DJANGO_SECRET_KEY=sua_chave_secreta
 DJANGO_DEBUG=True
-            """)
+            """
+            )
 
 
 def main():
@@ -305,9 +383,10 @@ def main():
     criar_arquivos(f"{nome_do_projeto}/scripts/setup.sh", script)
     criar_arquivos(f"{nome_do_projeto}/.gitignore", gitignore)
     criar_arquivos(f"{nome_do_projeto}/README.md", readme)
-    criar_arquivos(f"{nome_do_projeto}/requirements.txt", '')
+    criar_arquivos(f"{nome_do_projeto}/requirements.txt", "")
     criar_arquivos(f"{nome_do_projeto}/.github/workflows/ci-cd.yml", ci_cd)
     criar_arquivos(f"{nome_do_projeto}/gitconfig.py", git)
+    criar_arquivos(f"{nome_do_projeto}/nginx/nginx.conf", nginx)
     print("Arquivos criados com sucesso!")
 
 

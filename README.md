@@ -1,84 +1,50 @@
+## README.md
 
-# My Django App
+**Projeto Django - Script de Criação Automática**
 
-Este é um projeto Django que utiliza Docker Compose para gerenciar um ambiente
-de desenvolvimento e integração contínua (CI/CD) para automatizar o teste e
-a implantação do código.
+Este documento descreve o script Python que automatiza a criação de um projeto Django básico. 
 
-## Instruções de Instalação
+### Funcionalidades
 
-Para executar este projeto localmente, siga as instruções abaixo:
+* Cria a estrutura de diretórios do projeto, incluindo:
+    * `nginx`
+    * `django_app`
+    * `tests`
+    * `.github/workflows`
+    * `scripts`
+* Gera arquivos de configuração essenciais:  
+    * `Dockerfile`
+    * `docker-compose.yml`
+    * `.gitignore`
+    * `README.md` (este arquivo)
+    * `requirements.txt`
+    * `setup.sh` (script de inicialização)
+    * `gitconfig.py` (configuração básica do Git)
+    * Arquivos de ambiente (`.env`)
+* Integra com Docker e Docker Compose para facilitar o gerenciamento de ambiente e deploy.
+* Inclui um script de inicialização (`setup.sh`) para instalar dependências e aplicar migrações do banco de dados.
 
-1. Clone o repositório:
+### Uso
 
-   ```bash
-   git clone https://github.com/seu-usuario/my-django-app.git
-   ```
+1. Salve o script como `create_django_project.py` no diretório desejado.
+2. Execute o comando `python create_django_project.py`.
+3. Siga as instruções na tela para configurar o projeto.
 
-2. Navegue até o diretório do projeto:
+### Observações
 
-   ```bash
-   cd my-django-app
-   ```
+* Este script é um exemplo e pode ser adaptado às suas necessidades específicas.
+* É recomendável ler e compreender o código antes de executá-lo.
+* O script cria um projeto Django básico. Você pode precisar instalar outras dependências e configurar o projeto de acordo com suas necessidades.
 
-3. Execute o script de inicialização para instalar as dependências
-e aplicar as migrações do banco de dados:
+### Recursos Adicionais
 
-   ```bash
-   sh scripts/setup.sh
-   ```
+* Documentação oficial do Django: [https://docs.djangoproject.com/en/stable/](https://docs.djangoproject.com/en/stable/)
+* Tutoriais do Django: [https://www.djangoproject.com/start/](https://www.djangoproject.com/start/)
+* Documentação do Docker: [https://docs.docker.com/get-started/](https://docs.docker.com/get-started/)
+* Documentação do Docker Compose: [https://docs.docker.com/compose/](https://docs.docker.com/compose/)
 
-4. Inicie o ambiente Docker Compose:
+### Contribuições
 
-   ```bash
-   docker-compose up
-   ```
+Este script é open-source e você pode contribuir para o seu desenvolvimento. Agradecemos qualquer colaboração!
 
-5. Acesse a aplicação em seu navegador em
-[http://localhost:8000](http://localhost:8000).
-
-## Instruções de Uso
-
-Após iniciar o ambiente Docker Compose, você pode interagir com a aplicação
-normalmente. Qualquer alteração feita nos arquivos será automaticamente
-refletida no servidor de desenvolvimento.
-
-## Testes
-
-Este projeto utiliza pytest para testes automatizados.
-Para executar os testes, utilize o seguinte comando:
-
-```bash
-pytest
-```
-
-## Contribuição
-
-Se você gostaria de contribuir para este projeto,
-por favor siga as etapas abaixo:
-
-1. Fork este repositório.
-2. Crie uma nova branch para suas alterações:
-
-   ```bash
-   git checkout -b minha-nova-feature
-   ```
-
-3. Faça suas alterações e commit:
-
-   ```bash
-   git commit -am 'Adiciona nova feature'
-   ```
-
-4. Push para a branch:
-
-   ```bash
-   git push origin minha-nova-feature
-   ```
-
-5. Crie um novo pull request.
-
-## Licença
-
-Este projeto está licenciado sob a [MIT License](LICENSE).
-        
+### Tenha um excelente desenvolvimento com Django!
