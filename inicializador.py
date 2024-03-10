@@ -242,69 +242,52 @@ jobs:
 def criar_script_inicializacao():
     with open(f"{nome_do_projeto}/scripts/setup.sh",
               "w", encoding="utf-8") as f:
-        f.write("""
+        f.write(f"""
 #!/bin/bash
 
-
-# Função para exibir a mensagem de uso
-usage() {
-  echo "Uso: $0 [-v VENV]"
-  echo "  -v VENV  Especifica o ambiente virtual Python a ser usado."
-  exit 1
-}
-
-# Variável para armazenar o ambiente virtual
-venv=
-
-# Leitura e tratamento das opções e argumentos
-while getopts ":v:" opt; do
-  case $opt in
-    v) venv=$OPTARG ;;
-    *) usage ;;
-  esac
-done
-
-# Remoção das opções da lista de argumentos
-shift $((OPTIND-1))
-
-# Validação do comando pip
-if ! command -v pip >/dev/null 2>&1; then
-  echo "Erro: O comando 'pip' não está instalado."
-  exit 1
-fi
-
-# Validação do ambiente virtual Python
-if [ -n "$venv" ]; then
-  if ! python -c "import sys; print(sys.prefix)" | grep -q "$venv"; then
-    echo "Erro: O ambiente virtual Python '$venv' não existe."
+# Verifica se o Python está instalado
+if ! command -v python &> /dev/null; then
+    echo "Python não está instalado. Por favor, instale o Python."
     exit 1
-  fi
-else
-  if ! python -c "import sys; print(sys.prefix)" | grep -q venv; then
-    echo "Erro: O ambiente virtual Python não está ativado."
+fi
+
+# Verifica se o Docker está instalado
+if ! command -v docker &> /dev/null; then
+    echo "Docker não está instalado. Por favor, instale o Docker."
     exit 1
-  fi
 fi
 
-# Instalação de dependências
-pip install -r requirements.txt >> install.log 2>&1
-
-# Verificação de erros na instalação das dependências
-if [ $? -ne 0 ]; then
-  echo "Erro ao instalar as dependências. Consulte o log de erros."
-  exit 1
+# Verifica se o Docker Compose está instalado
+if ! command -v docker-compose &> /dev/null; then
+    echo "Docker Compose não está instalado.instale o Docker Compose."
+    exit 1
 fi
 
-# Aplicação de migrações de banco de dados
-python manage.py migrate >> migrate.log 2>&1
+cd ..
 
-# Verificação de erros na migração do banco de dados
-if [ $? -ne 0 ]; then
-  echo "Erro nas migrações do banco de dados. Consulte o log de erros."
-  exit 1
+# Cria um ambiente virtual (venv) se não existir
+if [ ! -d "venv" ]; then
+    python -m venv venv
 fi
 
-echo "Script executado com sucesso!"
+# Ativa o ambiente virtual
+source venv/Scripts/activate
+
+# Instala o Django dentro do ambiente virtual
+pip install django
+
+
+# Cria um novo projeto Django na pasta 'django_app'
+django-admin startproject {nome_do_projeto} .
+
+# Retorna para o diretório do script
+cd -
+
+# Aplica as migrações do banco de dados
+python manage.py migrate
+
+# Inicia o servidor Django
+python manage.py runserver 0.0.0.0:8000
 
     """)
 
