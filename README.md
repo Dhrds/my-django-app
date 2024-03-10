@@ -16,7 +16,7 @@ Este documento descreve o script Python que automatiza a criação de um projeto
     * `Dockerfile`
     * `docker-compose.yml`
     * `.gitignore`
-    * `README.md` (este arquivo)
+    * `README.md`
     * `requirements.txt`
     * `setup.sh` (script de inicialização)
     * `gitconfig.py` (configuração básica do Git)
@@ -28,7 +28,7 @@ Este documento descreve o script Python que automatiza a criação de um projeto
 
 1. Salve o script como `create_django_project.py` no diretório desejado.
 2. Execute o comando `python create_django_project.py`.
-3. Siga as instruções na tela para configurar o projeto.
+3. Execute o comando `sh script/setup.sh` no git bash se estiver no windows
 
 ### Observações
 
