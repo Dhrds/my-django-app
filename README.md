@@ -29,6 +29,11 @@ Este documento descreve o script Python que automatiza a criação de um projeto
 1. Salve o script como `create_django_project.py` no diretório desejado.
 2. Execute o comando `python create_django_project.py`.
 3. Execute o comando `sh script/setup.sh` no git bash se estiver no windows
+4. Execute o comando docker-compose up -d para iniciar e docker-compose down para finalizar
+
+docker exec -it appmed-db-1 bash
+
+pg_dump -h db -p 5432 -U nome_do_usuario -d nome_do_banco_de_dados > arquivo_de_backup.sql 
 
 ### Observações
 

@@ -19,6 +19,7 @@ def criar_estrutura_diretorios():
             f"{nome_do_projeto}/tests",
             f"{nome_do_projeto}/.github/workflows",
             f"{nome_do_projeto}/scripts",
+            f"{nome_do_projeto}/util",
         ]
         for diretorio in diretorios:
             os.makedirs(diretorio, exist_ok=True)
@@ -51,45 +52,57 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copia o restante dos arquivos para o contêiner
 COPY . .
 
-# Comando para executar a aplicação
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+EXPOSE 80
         """
 docker_compose = """
+
 version: '3'
 
 services:
   db:
     image: postgres
     volumes:
-      - db_data:/var/lib/postgresql/data/
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env.dev
+
 
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/app
+    command: sh -c "pip install -r requirements.txt && python manage.py runserver 0.0.0.0:8085"
     ports:
-      - "8000:8000"
+      - "8090:8085"
     depends_on:
       - db
+    env_file:
+      - .env.dev
+    working_dir: /app 
+
+
+  pgadmin:
+    image: dpage/pgadmin4
     environment:
-      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
-      DJANGO_DEBUG: ${DJANGO_DEBUG}
-
-  nginx:
-    image: nginx
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-    ports:
-      - "80:80"
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: 123
     depends_on:
-      - web
+      - db
+    ports:
+      - "8081:80"
 
-        """
+  # nginx:
+  #   image: nginx
+  #   volumes:
+  #     - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+  #   depends_on:
+  #     - web
+volumes:
+  postgres_data:
+        
+        """ # noqa
 script = f"""
 #!/bin/bash
 
@@ -383,7 +396,7 @@ def main():
     criar_arquivos(f"{nome_do_projeto}/scripts/setup.sh", script)
     criar_arquivos(f"{nome_do_projeto}/.gitignore", gitignore)
     criar_arquivos(f"{nome_do_projeto}/README.md", readme)
-    criar_arquivos(f"{nome_do_projeto}/requirements.txt", "")
+    criar_arquivos(f"{nome_do_projeto}/requirements.txt", "Django==4.2.5")
     criar_arquivos(f"{nome_do_projeto}/.github/workflows/ci-cd.yml", ci_cd)
     criar_arquivos(f"{nome_do_projeto}/gitconfig.py", git)
     criar_arquivos(f"{nome_do_projeto}/nginx/nginx.conf", nginx)
