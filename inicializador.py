@@ -139,7 +139,7 @@ pip install django
 
 
 # Cria um novo projeto Django na pasta 'django_app'
-django-admin startproject {nome_do_projeto} .
+django-admin startproject {nome_do_projeto}
 
 
 # Aplica as migrações do banco de dados
